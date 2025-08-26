@@ -8,10 +8,14 @@
     "@nestjs/core": "^11.1.6",
     "@nestjs/mongoose": "^11.0.3",
     "@nestjs/platform-express": "^11.1.6",
+    "bcryptjs": "^3.0.2",
+    "lucide-react": "^0.542.0",
     "mongoose": "^8.18.0",
-    "react-beautiful-dnd": "^13.1.1"
+    "react-beautiful-dnd": "^13.1.1",
+    "typescript": "^5.9.2"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/mongoose": "^5.11.96",
     "@types/react-beautiful-dnd": "^13.1.8"
   }
