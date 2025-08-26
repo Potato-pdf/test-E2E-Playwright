@@ -12,6 +12,9 @@ import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautif
 export default function Home() {
   const [tasks, setTasks] = React.useState<any[]>([]);
   const [input, setInput] = React.useState("");
+  const [desc, setDesc] = React.useState("");
+  const [assignedTo, setAssignedTo] = React.useState("");
+  const [details, setDetails] = React.useState("");
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
 
@@ -30,9 +33,17 @@ export default function Home() {
   const handleAdd = async () => {
     if (input.trim()) {
       try {
-        const newTask = await createTask(input);
+        const newTask = await createTask({
+          title: input,
+          description: desc,
+          assignedTo,
+          details
+        });
         setTasks([...tasks, newTask]);
         setInput("");
+        setDesc("");
+        setAssignedTo("");
+        setDetails("");
       } catch {
         setError("No se pudo crear la tarea");
       }
@@ -79,22 +90,26 @@ export default function Home() {
       </AppBar>
       <Container maxWidth="lg" sx={{ mt: 6 }}>
         <DragDropContext onDragEnd={onDragEnd}>
-          <Box sx={{ display: 'flex', gap: 4, justifyContent: 'center', alignItems: 'flex-start' }}>
-            {columns.map((col) => (
-              <Paper key={col.key} elevation={1} sx={{
+          <Box sx={{ display: 'flex', gap: 0, justifyContent: 'center', alignItems: 'flex-start', border: '1px solid #111', borderRadius: 3, overflow: 'hidden' }}>
+            {columns.map((col, idx) => (
+              <Paper key={col.key} elevation={0} sx={{
                 p: 3,
-                borderRadius: 3,
-                minWidth: 320,
+                borderRadius: 0,
+                width: 350,
+                minWidth: 350,
+                maxWidth: 350,
                 bgcolor: '#fff',
-                border: '1px solid #eee',
-                flex: 1,
-                maxWidth: 400
+                borderRight: idx < columns.length - 1 ? '2px solid #111' : 'none',
+                borderLeft: idx === 0 ? 'none' : undefined,
+                boxShadow: 'none',
+                flex: 'none',
+                height: '100%'
               }}>
                 <Typography variant="h6" fontWeight={700} gutterBottom sx={{ color: '#111', letterSpacing: 1 }}>{col.title}</Typography>
                 {col.key === 'todo' && (
-                  <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+                  <Box sx={{ display: "flex", flexDirection: 'column', gap: 1.5, mb: 2 }}>
                     <TextField
-                      label="Nueva tarea"
+                      label="Título"
                       variant="outlined"
                       size="small"
                       value={input}
@@ -102,9 +117,38 @@ export default function Home() {
                       fullWidth
                       sx={{ bgcolor: '#fafafa', borderRadius: 1 }}
                     />
-                    <IconButton sx={{ bgcolor: '#111', color: '#fff', '&:hover': { bgcolor: '#333' } }} onClick={handleAdd} aria-label="Agregar tarea">
-                      <AddCircleOutlineIcon />
-                    </IconButton>
+                    <TextField
+                      label="Descripción"
+                      variant="outlined"
+                      size="small"
+                      value={desc}
+                      onChange={e => setDesc(e.target.value)}
+                      fullWidth
+                      sx={{ bgcolor: '#fafafa', borderRadius: 1 }}
+                    />
+                    <TextField
+                      label="Asignado a"
+                      variant="outlined"
+                      size="small"
+                      value={assignedTo}
+                      onChange={e => setAssignedTo(e.target.value)}
+                      fullWidth
+                      sx={{ bgcolor: '#fafafa', borderRadius: 1 }}
+                    />
+                    <TextField
+                      label="Detalles"
+                      variant="outlined"
+                      size="small"
+                      value={details}
+                      onChange={e => setDetails(e.target.value)}
+                      fullWidth
+                      sx={{ bgcolor: '#fafafa', borderRadius: 1 }}
+                    />
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <IconButton sx={{ bgcolor: '#111', color: '#fff', '&:hover': { bgcolor: '#333' } }} onClick={handleAdd} aria-label="Agregar tarea">
+                        <AddCircleOutlineIcon />
+                      </IconButton>
+                    </Box>
                   </Box>
                 )}
                 <Divider sx={{ mb: 2, bgcolor: '#eee' }} />
@@ -137,18 +181,42 @@ export default function Home() {
                                   py: 1.5,
                                 }}
                               >
-                                <ListItemIcon sx={{ minWidth: 36 }}>
-                                  <CheckCircleIcon color={task.status === "done" ? "success" : "disabled"} />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={task.title}
-                                  sx={{
-                                    textDecoration: task.status === "done" ? "line-through" : "none",
-                                    fontWeight: 500,
-                                    color: '#111',
-                                    fontSize: 17
-                                  }}
-                                />
+                                <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
+                                  <ListItemIcon sx={{ minWidth: 36 }}>
+                                    <CheckCircleIcon color={task.status === "done" ? "success" : "disabled"} />
+                                  </ListItemIcon>
+                                  <ListItemText
+                                    primary={task.title}
+                                    sx={{
+                                      textDecoration: task.status === "done" ? "line-through" : "none",
+                                      fontWeight: 500,
+                                      color: '#111',
+                                      fontSize: 17
+                                    }}
+                                  />
+                                </Box>
+                                {task.description && (
+                                  <Typography variant="body2" sx={{ color: '#444', mt: 0.5, mb: 0.5 }}>
+                                    {task.description}
+                                  </Typography>
+                                )}
+                                {task.assignedTo && (
+                                  <Typography variant="caption" sx={{ color: '#888', mb: 0.5 }}>
+                                    Asignado a: {task.assignedTo}
+                                  </Typography>
+                                )}
+                                {task.details && (
+                                  <Typography variant="caption" sx={{ color: '#aaa', mb: 0.5 }}>
+                                    {task.details}
+                                  </Typography>
+                                )}
+                                <IconButton size="small" sx={{ ml: 'auto', color: '#c00' }} onClick={async () => {
+                                  await import('../utils/api').then(mod => mod.deleteTask(task.id));
+                                  setTasks(tasks => tasks.filter(t => t.id !== task.id));
+                                }}>
+                                  {/* Eliminar */}
+                                  <span style={{ fontWeight: 700, fontSize: 18 }}>×</span>
+                                </IconButton>
                               </ListItem>
                             )}
                           </Draggable>

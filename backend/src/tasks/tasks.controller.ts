@@ -11,16 +11,29 @@ export class TasksController {
   }
 
   @Post()
-  create(@Body('title') title: string, @Body('description') description?: string) {
-    return this.tasksService.create(title, description);
+  create(
+    @Body('title') title: string,
+    @Body('description') description?: string,
+    @Body('assignedTo') assignedTo?: string,
+    @Body('details') details?: string,
+  ) {
+    return this.tasksService.create(title, description, assignedTo, details);
   }
 
   @Patch(':id/status')
   updateStatus(
     @Param('id') id: number,
-    @Body('status') status: 'todo' | 'inprogress' | 'done'
+    @Body('status') status: 'todo' | 'inprogress' | 'done',
   ) {
     return this.tasksService.updateStatus(id, status);
+  }
+
+  @Patch(':id')
+  updateTask(
+    @Param('id') id: number,
+    @Body() data: any,
+  ) {
+    return this.tasksService.updateTask(id, data);
   }
 
   @Delete(':id')

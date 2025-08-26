@@ -13,4 +13,10 @@ export class Task {
 
   @Column({ nullable: true })
   description?: string;
+    
+  @Column({ nullable: true })
+  assignedTo?: string;
+    
+  @Column({ nullable: true })
+  details?: string;
 }

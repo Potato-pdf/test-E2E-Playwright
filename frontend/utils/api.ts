@@ -5,11 +5,11 @@ export async function fetchTasks() {
   return res.json();
 }
 
-export async function createTask(title: string, description?: string) {
+export async function createTask(task: { title: string, description?: string, assignedTo?: string, details?: string }) {
   const res = await fetch(`${API_URL}/tasks`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title, description }),
+    body: JSON.stringify(task),
   });
   return res.json();
 }
