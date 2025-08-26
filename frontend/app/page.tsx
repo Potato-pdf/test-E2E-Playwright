@@ -38,6 +38,17 @@ export default function Home() {
     }
   };
 
+  // Agrupar tareas por estado
+  const columns = [
+    { key: 'todo', title: 'Por hacer' },
+    { key: 'inprogress', title: 'En progreso' },
+    { key: 'done', title: 'Hecho' },
+  ];
+  const grouped = columns.reduce((acc, col) => {
+    acc[col.key] = tasks.filter((t) => t.status === col.key);
+    return acc;
+  }, {} as Record<string, any[]>);
+
   return (
     <Box sx={{ flexGrow: 1, bgcolor: "#f5f6fa", minHeight: "100vh" }}>
       <AppBar position="static" color="primary" elevation={2}>
@@ -48,47 +59,51 @@ export default function Home() {
           <Button color="inherit">Login</Button>
         </Toolbar>
       </AppBar>
-      <Container maxWidth="sm" sx={{ mt: 6 }}>
-        <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
-          <Typography variant="h5" gutterBottom fontWeight={700}>
-            Lista de tareas para pruebas E2E
-          </Typography>
-          <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
-            <TextField
-              label="Nueva tarea"
-              variant="outlined"
-              size="small"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              fullWidth
-            />
-            <IconButton color="primary" onClick={handleAdd} aria-label="Agregar tarea">
-              <AddCircleOutlineIcon />
-            </IconButton>
-          </Box>
-          <Divider sx={{ mb: 2 }} />
-          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-              <CircularProgress />
-            </Box>
-          ) : error ? (
-            <Typography color="error">{error}</Typography>
-          ) : (
-            <List>
-              {tasks.map((task: any) => (
-                <ListItem key={task._id} disablePadding>
-                  <ListItemIcon>
-                    <CheckCircleIcon color={task.status === "done" ? "success" : "disabled"} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={task.title}
-                    sx={{ textDecoration: task.status === "done" ? "line-through" : "none" }}
+      <Container maxWidth="lg" sx={{ mt: 6 }}>
+        <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center' }}>
+          {columns.map((col) => (
+            <Paper key={col.key} elevation={3} sx={{ p: 2, borderRadius: 3, minWidth: 320, bgcolor: '#fff', flex: 1 }}>
+              <Typography variant="h6" fontWeight={700} gutterBottom>{col.title}</Typography>
+              {col.key === 'todo' && (
+                <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+                  <TextField
+                    label="Nueva tarea"
+                    variant="outlined"
+                    size="small"
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    fullWidth
                   />
-                </ListItem>
-              ))}
-            </List>
-          )}
-        </Paper>
+                  <IconButton color="primary" onClick={handleAdd} aria-label="Agregar tarea">
+                    <AddCircleOutlineIcon />
+                  </IconButton>
+                </Box>
+              )}
+              <Divider sx={{ mb: 2 }} />
+              {loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                  <CircularProgress />
+                </Box>
+              ) : error ? (
+                <Typography color="error">{error}</Typography>
+              ) : (
+                <List>
+                  {grouped[col.key].map((task: any) => (
+                    <ListItem key={task.id} disablePadding>
+                      <ListItemIcon>
+                        <CheckCircleIcon color={task.status === "done" ? "success" : "disabled"} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={task.title}
+                        sx={{ textDecoration: task.status === "done" ? "line-through" : "none" }}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              )}
+            </Paper>
+          ))}
+        </Box>
       </Container>
     </Box>
   );
