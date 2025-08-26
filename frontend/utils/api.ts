@@ -14,7 +14,7 @@ export async function createTask(title: string, description?: string) {
   return res.json();
 }
 
-export async function updateTaskStatus(id: string, status: string) {
+export async function updateTaskStatus(id: number | string, status: string) {
   const res = await fetch(`${API_URL}/tasks/${id}/status`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
