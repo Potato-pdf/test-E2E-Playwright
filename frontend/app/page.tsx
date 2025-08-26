@@ -41,9 +41,9 @@ export default function Home() {
 
   // Agrupar tareas por estado
   const columns = [
-    { key: 'todo', title: 'Por hacer' },
-    { key: 'inprogress', title: 'En progreso' },
-    { key: 'done', title: 'Hecho' },
+    { key: 'todo', title: 'Por hacer', color: '#f7b731' },
+    { key: 'inprogress', title: 'En progreso', color: '#3867d6' },
+    { key: 'done', title: 'Hecho', color: '#20bf6b' },
   ];
   const grouped = columns.reduce((acc, col) => {
     acc[col.key] = tasks.filter((t) => t.status === col.key);
@@ -64,21 +64,35 @@ export default function Home() {
   };
 
   return (
-    <Box sx={{ flexGrow: 1, bgcolor: "#f5f6fa", minHeight: "100vh" }}>
-      <AppBar position="static" color="primary" elevation={2}>
+    <Box sx={{
+      flexGrow: 1,
+      bgcolor: "linear-gradient(120deg, #f5f6fa 0%, #e0eafc 100%)",
+      minHeight: "100vh",
+      pb: 6
+    }}>
+      <AppBar position="static" sx={{ bgcolor: '#222f3e' }} elevation={3}>
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Demo E2E Playwright
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1, fontWeight: 700, letterSpacing: 1 }}>
+            Trello E2E Demo
           </Typography>
-          <Button color="inherit">Login</Button>
+          <Button color="inherit" sx={{ fontWeight: 600 }}>Login</Button>
         </Toolbar>
       </AppBar>
       <Container maxWidth="lg" sx={{ mt: 6 }}>
         <DragDropContext onDragEnd={onDragEnd}>
-          <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center' }}>
+          <Box sx={{ display: 'flex', gap: 4, justifyContent: 'center', alignItems: 'flex-start' }}>
             {columns.map((col) => (
-              <Paper key={col.key} elevation={3} sx={{ p: 2, borderRadius: 3, minWidth: 320, bgcolor: '#fff', flex: 1 }}>
-                <Typography variant="h6" fontWeight={700} gutterBottom>{col.title}</Typography>
+              <Paper key={col.key} elevation={6} sx={{
+                p: 3,
+                borderRadius: 4,
+                minWidth: 340,
+                bgcolor: '#f8fafc',
+                borderTop: `6px solid ${col.color}`,
+                boxShadow: '0 4px 24px 0 rgba(30,30,60,0.08)',
+                flex: 1,
+                maxWidth: 400
+              }}>
+                <Typography variant="h6" fontWeight={800} gutterBottom sx={{ color: col.color, letterSpacing: 1 }}>{col.title}</Typography>
                 {col.key === 'todo' && (
                   <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
                     <TextField
@@ -89,7 +103,7 @@ export default function Home() {
                       onChange={e => setInput(e.target.value)}
                       fullWidth
                     />
-                    <IconButton color="primary" onClick={handleAdd} aria-label="Agregar tarea">
+                    <IconButton sx={{ bgcolor: col.color, color: '#fff', '&:hover': { bgcolor: '#222f3e' } }} onClick={handleAdd} aria-label="Agregar tarea">
                       <AddCircleOutlineIcon />
                     </IconButton>
                   </Box>
@@ -114,19 +128,27 @@ export default function Home() {
                                 {...provided.dragHandleProps}
                                 disablePadding
                                 sx={{
-                                  mb: 1,
-                                  bgcolor: snapshot.isDragging ? '#e3f2fd' : '#fff',
-                                  borderRadius: 2,
-                                  boxShadow: snapshot.isDragging ? 4 : 1,
+                                  mb: 2,
+                                  bgcolor: snapshot.isDragging ? col.color + '22' : '#fff',
+                                  borderRadius: 3,
+                                  boxShadow: snapshot.isDragging ? 6 : 2,
+                                  borderLeft: `4px solid ${col.color}`,
                                   transition: 'background 0.2s',
+                                  px: 2,
+                                  py: 1.5,
                                 }}
                               >
-                                <ListItemIcon>
+                                <ListItemIcon sx={{ minWidth: 36 }}>
                                   <CheckCircleIcon color={task.status === "done" ? "success" : "disabled"} />
                                 </ListItemIcon>
                                 <ListItemText
                                   primary={task.title}
-                                  sx={{ textDecoration: task.status === "done" ? "line-through" : "none" }}
+                                  sx={{
+                                    textDecoration: task.status === "done" ? "line-through" : "none",
+                                    fontWeight: 600,
+                                    color: '#222f3e',
+                                    fontSize: 18
+                                  }}
                                 />
                               </ListItem>
                             )}
