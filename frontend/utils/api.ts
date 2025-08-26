@@ -1,0 +1,31 @@
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+export async function fetchTasks() {
+  const res = await fetch(`${API_URL}/tasks`);
+  return res.json();
+}
+
+export async function createTask(title: string, description?: string) {
+  const res = await fetch(`${API_URL}/tasks`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title, description }),
+  });
+  return res.json();
+}
+
+export async function updateTaskStatus(id: string, status: string) {
+  const res = await fetch(`${API_URL}/tasks/${id}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  });
+  return res.json();
+}
+
+export async function deleteTask(id: string) {
+  const res = await fetch(`${API_URL}/tasks/${id}`, {
+    method: 'DELETE',
+  });
+  return res.json();
+}

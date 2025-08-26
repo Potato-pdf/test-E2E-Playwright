@@ -1,22 +1,40 @@
 
 "use client";
+
 import * as React from "react";
-import { AppBar, Box, Toolbar, Typography, Button, Container, Paper, List, ListItem, ListItemIcon, ListItemText, Divider, TextField, IconButton } from "@mui/material";
+import { AppBar, Box, Toolbar, Typography, Button, Container, Paper, List, ListItem, ListItemIcon, ListItemText, Divider, TextField, IconButton, CircularProgress } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { fetchTasks, createTask } from "../utils/api";
+
 
 export default function Home() {
-  const [tasks, setTasks] = React.useState([
-    { id: 1, text: "Probar login", done: true },
-    { id: 2, text: "Probar registro", done: false },
-    { id: 3, text: "Probar dashboard", done: false },
-  ]);
+  const [tasks, setTasks] = React.useState<any[]>([]);
   const [input, setInput] = React.useState("");
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState("");
 
-  const handleAdd = () => {
+  React.useEffect(() => {
+    fetchTasks()
+      .then(data => {
+        setTasks(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("No se pudo cargar las tareas");
+        setLoading(false);
+      });
+  }, []);
+
+  const handleAdd = async () => {
     if (input.trim()) {
-      setTasks([...tasks, { id: Date.now(), text: input, done: false }]);
-      setInput("");
+      try {
+        const newTask = await createTask(input);
+        setTasks([...tasks, newTask]);
+        setInput("");
+      } catch {
+        setError("No se pudo crear la tarea");
+      }
     }
   };
 
@@ -49,19 +67,27 @@ export default function Home() {
             </IconButton>
           </Box>
           <Divider sx={{ mb: 2 }} />
-          <List>
-            {tasks.map(task => (
-              <ListItem key={task.id} disablePadding>
-                <ListItemIcon>
-                  <CheckCircleIcon color={task.done ? "success" : "disabled"} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={task.text}
-                  sx={{ textDecoration: task.done ? "line-through" : "none" }}
-                />
-              </ListItem>
-            ))}
-          </List>
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : error ? (
+            <Typography color="error">{error}</Typography>
+          ) : (
+            <List>
+              {tasks.map((task: any) => (
+                <ListItem key={task._id} disablePadding>
+                  <ListItemIcon>
+                    <CheckCircleIcon color={task.status === "done" ? "success" : "disabled"} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={task.title}
+                    sx={{ textDecoration: task.status === "done" ? "line-through" : "none" }}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          )}
         </Paper>
       </Container>
     </Box>
