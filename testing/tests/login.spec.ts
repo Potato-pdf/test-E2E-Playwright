@@ -5,7 +5,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Testing Form', () =>{
-  test('Redirije al login despues de registrar', async ({ page }) => {
+  test('Redirije a la paguina principal despues de crear y usar un usuario nuevo', async ({ page }) => {
     // Generar un nombre de usuario aleatorio para evitar conflictos entre navegadores
     const username = `testuser_${Math.floor(Math.random() * 1000000)}`;
     // Haz clic en el botón que dice 'Regístrate' para mostrar el formulario de registro
