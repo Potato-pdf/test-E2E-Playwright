@@ -32,7 +32,11 @@ export function RegisterForm({ onToggleLogin }: RegisterFormProps) {
     }
     try {
       await register({ username, password });
-      router.push("/login");
+      if (onToggleLogin) {
+        onToggleLogin();
+      } else {
+        router.push("/login");
+      }
     } catch (err: any) {
       setError(err.message || "Error de registro");
     }

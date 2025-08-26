@@ -137,9 +137,9 @@ export default function Home() {
         </Box>
       </Box>
       {/* Tablero principal */}
-      <Box sx={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', p: 4 }}>
+      <Box sx={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', p: 4, minHeight: '90vh' }}>
         <DragDropContext onDragEnd={onDragEnd}>
-          <Box sx={{ display: 'flex', gap: 0, justifyContent: 'center', alignItems: 'flex-start', border: '1px solid #fff', borderRadius: 3, overflow: 'hidden', width: '100%' }}>
+          <Box sx={{ display: 'flex', gap: 0, justifyContent: 'center', alignItems: 'flex-start', border: '1px solid #fff', borderRadius: 3, overflow: 'hidden', width: '100%', minHeight: '80vh' }}>
             {columns.map((col, idx) => (
               <Paper key={col.key} elevation={0} sx={{
                 p: 3,
@@ -152,7 +152,7 @@ export default function Home() {
                 borderLeft: idx === 0 ? 'none' : undefined,
                 boxShadow: 'none',
                 flex: 'none',
-                minHeight: 600,
+                minHeight: 900,
                 color: '#fff',
                 display: 'flex',
                 flexDirection: 'column',
