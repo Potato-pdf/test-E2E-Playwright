@@ -3,6 +3,8 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { register } from "@/utils/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,44 +17,40 @@ interface RegisterFormProps {
 export function RegisterForm({ onToggleLogin }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [error, setError] = useState("")
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Register attempt:", { name, email, password, confirmPassword })
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden");
+      return;
+    }
+    try {
+      await register({ username, password });
+      router.push("/");
+    } catch (err: any) {
+      setError(err.message || "Error de registro");
+    }
   }
 
   return (
     <div className="space-y-8">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="name" className="text-sm font-light text-white uppercase tracking-wider">
-            Nombre
+          <Label htmlFor="username" className="text-sm font-light text-white uppercase tracking-wider">
+            Usuario
           </Label>
           <Input
-            id="name"
+            id="username"
             type="text"
-            placeholder="Tu nombre completo"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="bg-transparent border-0 border-b border-white/30 rounded-none px-0 py-3 text-white placeholder:text-white/50 focus:border-white focus:ring-0 focus-visible:ring-0"
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-light text-white uppercase tracking-wider">
-            Email
-          </Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="tu@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            placeholder="usuario"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             className="bg-transparent border-0 border-b border-white/30 rounded-none px-0 py-3 text-white placeholder:text-white/50 focus:border-white focus:ring-0 focus-visible:ring-0"
             required
           />
@@ -116,7 +114,8 @@ export function RegisterForm({ onToggleLogin }: RegisterFormProps) {
         </div>
       </form>
 
-      <div className="text-center space-y-4">
+  {error && <div className="text-red-400 text-center text-sm">{error}</div>}
+  <div className="text-center space-y-4">
         <div className="w-8 h-px bg-white/30 mx-auto"></div>
         <p className="text-sm text-white/60 font-light">
           ¿Ya tienes cuenta?{" "}
