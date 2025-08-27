@@ -114,3 +114,9 @@ Esto hace tus tests más robustos y rápidos cuando todo funciona bien, pero tol
 ````
     test.describe.configure({ mode: 'serial' });
 ````
+
+1. Seleccionar el primer elemento
+````
+await page.locator('div.bg-card.cursor-pointer').first().click();
+
+````
