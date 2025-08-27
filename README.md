@@ -111,4 +111,6 @@ Esto hace tus tests más robustos y rápidos cuando todo funciona bien, pero tol
 - Esta línea fuerza que los tests corran UNO DESPUÉS DEL OTRO
   en lugar de en paralelo. Sin esto, cada test corre en un "worker" diferente
    y el username generado en beforeAll no se comparte entre tests.
+````
     test.describe.configure({ mode: 'serial' });
+````
